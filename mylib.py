@@ -80,5 +80,24 @@ def demorgans(line) :
     else:####elif line[1][0]==and
            return("or",("not",A),("not",B))
 
-def distributivity(line):
+def doubleNeg(line):
+    '''
+    (not, (not,A)) -> A  
+'''
+    if line[1][0] == "not":
+        return line[1][1]
+    else:
+        return line
     
+def separator(_list):
+    for line in _list:
+        if line[0] == "and":
+            #print(line[1])
+            _list.append((line[1]))
+            #print(line[2])
+            _list.append((line[2]))
+            _list.remove(line)
+
+    
+        
+        
