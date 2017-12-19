@@ -5,6 +5,12 @@
     Pedro Henrique Silva
     Andre Baiao
 '''
+#######
+
+
+
+
+
 #############Test Functions#############
 def isAtom(line):
     '''
@@ -73,6 +79,12 @@ A<=>B = (~A or B) and (A or ~B)
 
 
 def demorgans(line) :
+    '''
+    Applies Demorgans laws to given line,
+    ~(A or B) =  ~A and ~B
+    ~(A and B) =  ~A or ~B
+'''
+    
     A = line[1][1]
     B = line[1][2] 
     if (line[1][0] == "or"):#tests if it is a negation of an AND or OR
@@ -90,14 +102,61 @@ def doubleNeg(line):
         return line
     
 def separator(_list):
+    lista = []
     for line in _list:
-        if line[0] == "and":
-            #print(line[1])
+        if (line[0] == "and"):
             _list.append((line[1]))
-            #print(line[2])
             _list.append((line[2]))
             _list.remove(line)
 
+def CNF_TESTER(_list):
+    for line in _list:
+        if not(isCNF(line)):
+            return False
+    return True
+
+def distributivity(line):
+
+    component1 = line[1]
+    component2 = line[2]
+    if (component1[0]=="and" and component2[0] == "and"):
+        return (("and", ("and", ("and",("or", component1[1],component2[1]),("or", component1[1],component2[2])),("or", component1[2],component2[1])),("or", component1[2],component2[2])))
+    elif component1[0]=="and" and isAtom(component2):
+        return ("and",("or",component1[1],component2),("or",component1[2],component2))
+    elif component2[0]=="and" and isAtom(component1):
+        return ("and",("or",component2[1],component1),("or",component2[2],component1))
     
-        
-        
+
+
+
+def converter(_list):
+    '''
+    Converter takes the initial statements, in a list format, and returns
+    the convertion to cnf of the entire list
+
+    '''
+    test = False
+    while not(test):
+        for line in _list:
+            if (line[0] == "<=>"):
+                _list.append(equivalence(line))
+                _list.remove(line)
+
+            elif(line[0] == "=>"):
+                _list.append(implication(line))
+                _list.remove(line)
+                
+
+            elif(line[0] == "or" and not(isCNF(line))):
+                _list.append(distributivity(line))
+                _list.remove(line)  
+
+            elif(line[0] == "not" and not(isCNF(line))):
+                if (doubleNeg(line) == line):#se não for uma double negation
+                    _list.append(demorgans(line))
+                    _list.remove(line)    
+                _list.append(doubleNeg(line))# elimina double negation
+                _list.remove(line)
+        separator(_list)
+        test = CNF_TESTER(_list)
+
