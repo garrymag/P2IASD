@@ -1,0 +1,14 @@
+from mylib import *
+
+def reader(file):
+    text = open(file)
+    sentences =[]
+    for line in text:
+        sentences.append(eval(line))
+    return sentences
+            
+                
+def main():
+    a = reader("p1.txt")
+    converter(a)
+    return a
